@@ -1,112 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-
-public abstract class Container
-{
-    protected List<double> data;
-
-    public Container(IEnumerable<double> initialData)
-    {
-        data = new List<double>(initialData);
-    }
-
-    // Віртуальний метод сортування
-    public abstract void Sort();
-
-    // Віртуальний метод поелементної обробки
-    public abstract void ForEach();
-
-    // Метод для виведення вмісту контейнера
-    public void Display()
-    {
-        foreach (var item in data)
-        {
-            Console.WriteLine(item);
-        }
-    }
-}
-
-public class Bubble : Container
-{
-    public Bubble(IEnumerable<double> initialData) : base(initialData) { }
-
-    // Реалізація бульбашкового сортування
-    public override void Sort()
-    {
-        for (int i = 0; i < data.Count - 1; i++)
-        {
-            for (int j = 0; j < data.Count - i - 1; j++)
-            {
-                if (data[j] > data[j + 1])
-                {
-                    double temp = data[j];
-                    data[j] = data[j + 1];
-                    data[j + 1] = temp;
-                }
-            }
-        }
-    }
-
-    // Реалізація поелементної обробки - добування квадратного кореня
-    public override void ForEach()
-    {
-        for (int i = 0; i < data.Count; i++)
-        {
-            data[i] = Math.Sqrt(data[i]);
-        }
-    }
-}
-
-public class Choice : Container
-{
-    public Choice(IEnumerable<double> initialData) : base(initialData) { }
-
-    // Реалізація сортування методом вибору
-    public override void Sort()
-    {
-        for (int i = 0; i < data.Count - 1; i++)
-        {
-            int minIndex = i;
-            for (int j = i + 1; j < data.Count; j++)
-            {
-                if (data[j] < data[minIndex])
-                {
-                    minIndex = j;
-                }
-            }
-            double temp = data[minIndex];
-            data[minIndex] = data[i];
-            data[i] = temp;
-        }
-    }
-
-    // Реалізація поелементної обробки - обчислення логарифма
-    public override void ForEach()
-    {
-        for (int i = 0; i < data.Count; i++)
-        {
-            data[i] = Math.Log(data[i]);
-        }
-    }
-}
 
 public class Program
 {
     public static void Main()
     {
-        List<double> initialData = new List<double> { 16, 4, 25, 9, 36 };
+        // Робота з одномірним масивом
+        double[] array1D = { -3.5, 2.0, -1.0, 5.5, -6.0, 4.0, -0.5, 1.5, 3.0 };
 
-        Console.WriteLine("Bubble Sort and Square Root:");
-        Bubble bubbleContainer = new Bubble(initialData);
-        bubbleContainer.Sort();
-        bubbleContainer.ForEach();
-        bubbleContainer.Display();
+        // a) Знаходимо максимальний елемент масиву
+        double maxElement = array1D.Max();
+        Console.WriteLine($"Максимальний елемент масиву: {maxElement}");
 
-        Console.WriteLine("\nChoice Sort and Logarithm:");
-        Choice choiceContainer = new Choice(initialData);
-        choiceContainer.Sort();
-        choiceContainer.ForEach();
-        choiceContainer.Display();
+        // б) Знаходимо суму елементів масиву, розташованих до останнього додатнього елемента
+        int lastPositiveIndex = Array.FindLastIndex(array1D, x => x > 0);
+        double sumBeforeLastPositive = array1D.Take(lastPositiveIndex).Sum();
+        Console.WriteLine($"Сума елементів до останнього додатнього елемента: {sumBeforeLastPositive}");
+
+        // Стиснення масиву, видаливши всі елементи, модуль яких знаходиться в інтервалі (-1, 1)
+        double[] compressedArray = array1D.Where(x => Math.Abs(x) >= 1).ToArray();
+        Array.Resize(ref compressedArray, array1D.Length);
+        for (int i = array1D.Length - compressedArray.Length; i < compressedArray.Length; i++)
+        {
+            compressedArray[i] = 0;
+        }
+
+        Console.WriteLine("Стиснутий масив:");
+        foreach (var item in compressedArray)
+        {
+            Console.Write(item + " ");
+        }
+        Console.WriteLine();
+
+        // Робота з двовимірним масивом
+        double[,] array2D = {
+            { 5.5, 2.2, 3.3 },
+            { 4.4, 1.1, 0.5 },
+            { 7.7, 8.8, 9.9 }
+        };
+
+        // a) Визначити, який елемент більше: у верхньому лівому чи верхньому правому куті
+        double topLeft = array2D[0, 0];
+        double topRight = array2D[0, array2D.GetLength(1) - 1];
+        Console.WriteLine($"Верхній лівий елемент: {topLeft}");
+        Console.WriteLine($"Верхній правий елемент: {topRight}");
+        Console.WriteLine($"Більший елемент: {(topLeft > topRight ? "Верхній лівий" : "Верхній правий")}");
+
+        // б) Визначити, який елемент менше: у нижньому правому чи верхньому лівому куті
+        double bottomRight = array2D[array2D.GetLength(0) - 1, array2D.GetLength(1) - 1];
+        Console.WriteLine($"Нижній правий елемент: {bottomRight}");
+        Console.WriteLine($"Менший елемент: {(topLeft < bottomRight ? "Верхній лівий" : "Нижній правий")}");
+
+        // Виведення двовимірного масиву
+        Console.WriteLine("Двовимірний масив:");
+        for (int i = 0; i < array2D.GetLength(0); i++)
+        {
+            for (int j = 0; j < array2D.GetLength(1); j++)
+            {
+                Console.Write(array2D[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
     }
 }
